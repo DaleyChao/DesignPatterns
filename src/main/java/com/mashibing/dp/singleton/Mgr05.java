@@ -7,7 +7,7 @@ package com.mashibing.dp.singleton;
  * 可以通过synchronized解决，但也带来效率下降
  */
 public class Mgr05 {
-    private static Mgr05 INSTANCE;
+    private static volatile Mgr05 INSTANCE;
 
     private Mgr05() {
     }
@@ -16,12 +16,14 @@ public class Mgr05 {
         if (INSTANCE == null) {
             //妄图通过减小同步代码块的方式提高效率，然后不可行
             synchronized (Mgr05.class) {
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if (INSTANCE == null) {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    INSTANCE = new Mgr05();
                 }
-                INSTANCE = new Mgr05();
             }
         }
         return INSTANCE;
